@@ -2,7 +2,6 @@
  * DNI:48776731X
  * NOMBRE: Esther Peral Soler
  * Token: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
- * seed = 333
  */
 
 #include <iostream>
@@ -44,7 +43,6 @@ struct Hero{
   int kills[KENEMIES-1];
 };
 
-typedef char Tcadena[KNAME];
 
 int rollDice();
 Hero createHero();
