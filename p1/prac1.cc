@@ -50,9 +50,9 @@ int rollDice();
 Hero createHero();
 void check_name(Hero& hero);
 Enemy createEnemy();
-void showMenu(char&option, Hero& hero, Enemy& enemy, bool runaway, bool& special_attack);
-void Runaway(bool& runaway, Hero& hero, Enemy& enemy, bool special_attack);
-void fight(Hero& hero, Enemy& enemy, bool runaway, bool special_attack);
+void showMenu(char&option, Hero& hero, Enemy& enemy, bool runaway, bool& special_attack, bool tspecial);
+void Runaway(bool& runaway, Hero& hero, Enemy& enemy, bool special_attack, bool tspecial);
+void fight(Hero& hero, Enemy& enemy, bool runaway, bool special_attack, bool& tspecial);
 void report(const Hero& hero);
 
 int rollDice(){
@@ -201,7 +201,7 @@ Enemy createEnemy(){
 
 }
 
-void showMenu(char& option, Hero& hero, Enemy& enemy, bool runaway, bool& special_attack){
+void showMenu(char& option, Hero& hero, Enemy& enemy, bool runaway, bool& special_attack, bool tspecial){
 
     bool valid;
 
@@ -233,7 +233,6 @@ void showMenu(char& option, Hero& hero, Enemy& enemy, bool runaway, bool& specia
              << "q- Quit" << endl
              << "Option: ";
        cin>>option;
-       //cout<<option<<endl;
 
        if(option=='q'){
             valid = true;
@@ -247,25 +246,27 @@ void showMenu(char& option, Hero& hero, Enemy& enemy, bool runaway, bool& specia
     cout<<endl;
     
     switch(option){
-        case '1': fight(hero, enemy, runaway, special_attack);
+        case '1': fight(hero, enemy, runaway, special_attack, tspecial);
+                  runaway = false;
             break;
             
-        case '2': Runaway(runaway, hero, enemy, special_attack);
+        case '2': Runaway(runaway, hero, enemy, special_attack, tspecial);
             break;
             
         case '3': 
             if(hero.special == true){
                 special_attack = true;
-                fight(hero, enemy, runaway, special_attack);
-                // hero.special = false;
+                fight(hero, enemy, runaway, special_attack, tspecial);
             }else{
                 cout<<"ERROR: special not available"<<endl;
-                showMenu(option, hero, enemy, runaway, special_attack);
+                showMenu(option, hero, enemy, runaway, special_attack, tspecial);
             }
+            runaway = false;
+
             break;
             
         case '4': report(hero);
-                  fight(hero, enemy, runaway, special_attack);
+                  fight(hero, enemy, runaway, special_attack, tspecial);
             break;
             
         case 'q': 
@@ -274,7 +275,7 @@ void showMenu(char& option, Hero& hero, Enemy& enemy, bool runaway, bool& specia
     
 }
 
-void Runaway(bool& runaway, Hero& hero, Enemy& enemy, bool special_attack){
+void Runaway(bool& runaway, Hero& hero, Enemy& enemy, bool special_attack, bool tspecial){
     
     bool conditional; 
     char option;
@@ -296,27 +297,28 @@ void Runaway(bool& runaway, Hero& hero, Enemy& enemy, bool special_attack){
             hero.runaways--;
             runaway = true; 
             
-            createEnemy();
-            showMenu(option, hero, enemy, runaway, special_attack);
+            enemy = createEnemy();
+            showMenu(option, hero, enemy, runaway, special_attack, tspecial);
                         
         }else /*if(!conditional || hero.runaways == 0)*/{
                         
             cout<< "ERROR: cannot run away" << endl;
-            showMenu(option, hero, enemy, runaway, special_attack);
+            showMenu(option, hero, enemy, runaway, special_attack, tspecial);
         }
     
 }
 
-void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack){ //hacer llamada recursiva hasta q el heroe muera
+void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tspecial){ //hacer llamada recursiva hasta q el heroe muera
 
-    int hit_points=0, dicenumber_attack=0, dicenumber_defense=0, dicenumber;
+    int hit_points=0, dicenumber_attack=0, dicenumber_defense=0;
     char option; 
     
     //ataca el heroe
     
-    if(special_attack){
+    if(special_attack && tspecial){ //calculamos el valor de ataque del heroe, si hemos elegido opcion 3 de menu y tspecial es true (no hemos utilizado todavia el special attack) se multiplica por 3
         dicenumber_attack = 3*5*(rand()%KDICE+1); 
         hero.special = false;
+        tspecial=false;
     }else{
         dicenumber_attack = 5*(rand()%KDICE+1);
     }
@@ -374,8 +376,8 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack){ //hacer 
         
         cout<< "Hero exp points= "<<hero.exp<<endl;
         
-        createEnemy(); // se crea un nuevo enemigo
-        fight(hero, enemy, runaway, special_attack); //llamada recursiva
+        enemy = createEnemy(); // se crea un nuevo enemigo
+        fight(hero, enemy, runaway, special_attack, tspecial); //llamada recursiva
         
     }else{
         
@@ -410,7 +412,7 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack){ //hacer 
     
         if(hero.features.hp > 0){
             
-            showMenu(option, hero, enemy, runaway, special_attack);  
+            showMenu(option, hero, enemy, runaway, special_attack, tspecial);  
             
         }else{
             cout << "You are dead" << endl;
@@ -465,11 +467,11 @@ int main(int argc,char *argv[]){
     // Aquí vendrá todo tu código del "main"...
      
     char option;
-    bool runaway=false, special_attack=false;
+    bool runaway=false, special_attack=false, tspecial = true;
      
     Hero hero = createHero();
     Enemy enemy = createEnemy();
 
-    showMenu(option, hero, enemy, runaway, special_attack);    
+    showMenu(option, hero, enemy, runaway, special_attack, tspecial);    
   }
 }
