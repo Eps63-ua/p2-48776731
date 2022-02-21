@@ -47,9 +47,9 @@ struct Hero{
 typedef char Tcadena[KNAME];
 
 int rollDice();
-Hero createHero(Hero& hero);
+Hero createHero();
 void check_name(Hero& hero);
-Enemy createEnemy(Enemy& enemy, Hero& hero);
+Enemy createEnemy();
 void showMenu(char&option, Hero& hero, Enemy& enemy, bool runaway, bool& special_attack);
 void Runaway(bool& runaway, Hero& hero, Enemy& enemy, bool special_attack);
 void fight(Hero& hero, Enemy& enemy, bool runaway, bool special_attack);
@@ -59,34 +59,18 @@ int rollDice(){
   return rand()%KDICE+1;
 }
 
-Hero createHero(Hero& hero){
+Hero createHero(){
 
     char barra;
     float attack_percent=0, defense_percent=0;
     bool sum=false;
+    Hero hero;
 
     cout<<"Enter hero name:";
     cin.getline(hero.name, KNAME-1, '\n');
     
     check_name(hero);
     
-    /*if (not(isalpha(hero.name[0]))){
-     cout<"ERROR: wrong name";
-   
-    cout<<"Enter hero name:";
-    cin.getline(hero.name, KNAME-1, '\n');
-    }
-    
-    for(int i=1; i<KNAME && hero.name[i]!='\0'; i++){
-        if(not(isalnum(hero.name[i]))&& hero.name[i]!=' '){
-            cout<<"ERROR: wrong name";
-            i = KNAME;
-    cout<<"Enter hero name:";
-    cin.getline(hero.name, KNAME-1, '\n');
-        }
-    }
-    */
-
     cout<<"Enter attack/defense:";
         cin>>attack_percent>>barra>>defense_percent;
 
@@ -124,7 +108,7 @@ void check_name(Hero& hero){
     
     bool wrong = false;
         
-    if (not(isalpha(hero.name[0]))){
+    if (not(isalpha(hero.name[0]))){ //comprueba primer digito es igual a letra
         cout<<"ERROR: wrong name1"<<endl;
         wrong = true;
     }
@@ -135,9 +119,11 @@ void check_name(Hero& hero){
         check_name(hero);
     }
     
+    wrong = false; 
+    
     for(int i=1; i<KNAME && hero.name[i]!='\0'; i++){
         if(not(isalnum(hero.name[i]))&& hero.name[i]!=' '){
-            cout<<"ERROR: wrong name2";
+            cout<<"ERROR: wrong name2"<<endl;
             i = KNAME;
             wrong = true;
         }
@@ -150,9 +136,10 @@ void check_name(Hero& hero){
     }
 }
 
-Enemy createEnemy(Enemy &enemy, Hero &hero){
+Enemy createEnemy(){
 
     int result;
+    Enemy enemy;
 
    result = rollDice();
 
@@ -309,7 +296,7 @@ void Runaway(bool& runaway, Hero& hero, Enemy& enemy, bool special_attack){
             hero.runaways--;
             runaway = true; 
             
-            createEnemy(enemy, hero);
+            createEnemy();
             showMenu(option, hero, enemy, runaway, special_attack);
                         
         }else /*if(!conditional || hero.runaways == 0)*/{
@@ -387,7 +374,7 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack){ //hacer 
         
         cout<< "Hero exp points= "<<hero.exp<<endl;
         
-        createEnemy(enemy, hero); // se crea un nuevo enemigo
+        createEnemy(); // se crea un nuevo enemigo
         fight(hero, enemy, runaway, special_attack); //llamada recursiva
         
     }else{
@@ -480,8 +467,8 @@ int main(int argc,char *argv[]){
     char option;
     bool runaway=false, special_attack=false;
      
-    Hero hero = createHero(hero);
-    Enemy enemy = createEnemy(enemy, hero);
+    Hero hero = createHero();
+    Enemy enemy = createEnemy();
 
     showMenu(option, hero, enemy, runaway, special_attack);    
   }
