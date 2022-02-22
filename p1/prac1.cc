@@ -40,7 +40,7 @@ struct Hero{
   bool special;
   int runaways;
   int exp;
-  int kills[KENEMIES-1];
+  int kills[KENEMIES];
 };
 
 
@@ -107,12 +107,12 @@ void check_name(Hero& hero){
     bool wrong = false;
         
     if (not(isalpha(hero.name[0]))){ //comprueba primer digito es igual a letra
-        cout<<"ERROR: wrong name1"<<endl;
+        cout<<"ERROR: wrong name"<<endl;
         wrong = true;
     }
        
     if(wrong){
-        cout<<"Enter hero name1:"<<endl;
+        cout<<"Enter hero name:"<<endl;
         cin.getline(hero.name, KNAME-1, '\n');
         check_name(hero);
     }
@@ -121,14 +121,14 @@ void check_name(Hero& hero){
     
     for(int i=1; i<KNAME && hero.name[i]!='\0'; i++){
         if(not(isalnum(hero.name[i]))&& hero.name[i]!=' '){
-            cout<<"ERROR: wrong name2"<<endl;
+            cout<<"ERROR: wrong name"<<endl;
             i = KNAME;
             wrong = true;
         }
     }
     
      if(wrong){
-        cout<<"Enter hero name2:";
+        cout<<"Enter hero name:";
         cin.getline(hero.name, KNAME-1, '\n');
         check_name(hero);
     }
@@ -140,7 +140,7 @@ Enemy createEnemy(){
     Enemy enemy;
 
    result = rollDice();
-
+    
     if(result<=6){
 
         enemy.name = AXOLOTL;
@@ -177,7 +177,7 @@ Enemy createEnemy(){
         enemy.features.hp = enemy.features.defense*2;
     }
 
-    cout<<endl<<"[Enemy]"<<endl;
+    cout<<"[Enemy]"<<endl;
 
     switch(enemy.name){
         case 0: cout<<"Breed: Axolotl"<<endl;
@@ -193,7 +193,7 @@ Enemy createEnemy(){
     }
     cout<<"Attack: "<< enemy.features.attack << endl
     <<"Defense: "<< enemy.features.defense << endl
-    <<"Health points: "<< enemy.features.hp << endl<<endl;
+    <<"Health points: "<< enemy.features.hp << endl;
     
     return enemy;
 
@@ -241,8 +241,6 @@ void showMenu(char& option, Hero& hero, Enemy& enemy, bool runaway, bool& specia
        }
     }
     
-    cout<<endl;
-    
     switch(option){
         case '1': fight(hero, enemy, runaway, special_attack, tspecial);
                   runaway = false;
@@ -264,7 +262,7 @@ void showMenu(char& option, Hero& hero, Enemy& enemy, bool runaway, bool& specia
             break;
             
         case '4': report(hero);
-                  fight(hero, enemy, runaway, special_attack, tspecial);
+                  showMenu(option, hero, enemy, runaway, special_attack, tspecial);
             break;
             
         case 'q': 
@@ -331,7 +329,7 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tsp
    
     enemy.features.hp = enemy.features.hp - hit_points;
       
-    cout<< endl <<"Hero -> Enemy" << endl
+    cout<<"[Hero -> Enemy]" << endl
     << "Attack: " << hero.features.attack << " + " 
     << dicenumber_attack << endl
     << "Defense: " << enemy.features.defense << " + "
@@ -340,16 +338,15 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tsp
     
     if(enemy.features.hp >= 0){
         
-        cout << "Enemy health points: " << enemy.features.hp << endl << endl;
-        
+        cout << "Enemy health points: " << enemy.features.hp << endl;
     }else{
         
-        cout << "Enemy health points: 0" << endl << endl;
+        cout << "Enemy health points: 0" << endl;
     }
     
     if(enemy.features.hp <= 0){
         
-        cout<<"<<<<<<<<<<<<<<<<<<<<<Enemy killed>>>>>>>>>>>>>>>>>>>>>"<<endl;
+        cout<<"Enemy killed"<<endl;
         
         switch(enemy.name){
             case 0: hero.exp= hero.exp + 100;
@@ -366,16 +363,16 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tsp
         
         hero.kills[enemy.name]++;
         
-        for(int i=0; i<KENEMIES; i++){
+        /*for(int i=0; i<KENEMIES; i++){
             cout<<" "<<hero.kills[i]<<" ";
         }
         
         cout<<endl;
         
-        cout<< "Hero exp points= "<<hero.exp<<endl;
+        cout<< "Hero exp points= "<<hero.exp<<endl;*/
         
         enemy = createEnemy(); // se crea un nuevo enemigo
-        fight(hero, enemy, runaway, special_attack, tspecial); //llamada recursiva
+        showMenu(option, hero, enemy, runaway, special_attack, tspecial);
         
     }else{
         
@@ -392,7 +389,7 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tsp
      
         hero.features.hp = hero.features.hp - hit_points;
       
-        cout<< endl <<"Enemy -> Hero" << endl
+        cout<<"[Enemy -> Hero]" << endl
         << "Attack: " << enemy.features.attack << " + " 
         << dicenumber_attack << endl
         << "Defense: " << hero.features.defense << " + "
@@ -400,12 +397,10 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tsp
         << "Hit points: " << hit_points << endl;
         
         if(hero.features.hp >=0){
-            
-            cout << "Hero health points: " << hero.features.hp << endl << endl;
-        
+            cout << "Hero health points: " << hero.features.hp << endl;
         }else{
             
-            cout << "Hero health points: 0" << endl << endl;
+            cout << "Hero health points: 0" << endl;
         }
     
         if(hero.features.hp > 0){
@@ -413,6 +408,7 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tsp
             showMenu(option, hero, enemy, runaway, special_attack, tspecial);  
             
         }else{
+            hero.features.hp = 0;
             cout << "You are dead" << endl;
             report(hero);
         }
@@ -421,9 +417,9 @@ void fight(Hero &hero,Enemy &enemy, bool runaway, bool special_attack, bool& tsp
 
 void report(const Hero &hero){
     
-    int i=0, j=0, total_killed=0;
+    int i=0, total_killed=0;
     
-    for(i; i<KENEMIES; i++){
+    for(; i<KENEMIES; i++){
         total_killed = total_killed + hero.kills[i];
     }
     
