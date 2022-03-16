@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <vector>
+#include <cctype>
+
 
 using namespace std;
 
@@ -55,7 +57,7 @@ void error(Error e);
 void showMainMenu();
 void showCatalog(const BookStore &bookStore);
 void showExtendedCatalog(const BookStore &bookStore);
-void addBook(BookStore &bookStore, Error& e);
+void addBook(BookStore &bookStore);
 void deleteBook(BookStore &bookStore);
 void importExportMenu(BookStore &bookStore);
 void importFromCsv(BookStore &bookStore);
@@ -63,6 +65,10 @@ void exportToCsv(const BookStore &bookStore);
 void loadData(BookStore &bookStore);
 void saveData(const BookStore &bookStore);
 
+void bookTitle(Book book);
+void bookAuthor(Book book);
+void bookDate(Book book);
+void bookPrice(Book book);
 
 
 
@@ -105,25 +111,117 @@ void showMainMenu() {
        << "q- Quit" << endl
        << "Option: ";
 }
+
 void showCatalog(const BookStore &bookStore) {
+
+    
 }
 
 void showExtendedCatalog(const BookStore &bookStore) {
+
+    
 }
 
-void addBook(BookStore &bookStore, Error& e){
+void bookTitle(Book book){
     
-   Book book;
-   bool valid;
+    bool valid=true; //si es true lo introducido es válido y si es false no
     
     cout<<"Enter book title: "<<endl;
     getline(cin, book.title);
+    
+    int lon = book.title.size(); //mide la longitud de la cadena introducida
     //comprobar nombre
     
+    for(int i=0; i<lon; i++){
+        if(not((isalnum(book.title[i])) || book.title[i]==' ' || book.title[i]==':' || book.title[i]==',' || book.title[i]=='-')){
+            i = lon;
+            valid = false;
+            cout<<"No valido1"<<endl;
+            error(ERR_BOOK_TITLE);
+        }
+    }
     
-    cout<<"Enter author(s)= "<<endl;
+   while(!valid){
+        cout<<"Enter book title: "<<endl;
+        getline(cin, book.title);
+    
+        lon = book.title.size();
+        
+        valid = true;
+        
+        for(int i=0; i<lon; i++){
+            if(not((isalnum(book.title[i])) || book.title[i]==' ' || book.title[i]==':' || book.title[i]==',' || book.title[i]=='-')){
+                i = lon;
+                valid = false;
+                cout<<"No valido2"<<endl;
+                error(ERR_BOOK_TITLE);
+            }
+        }
+    }
+    
+    for(int i=0; i<lon; i++){
+        if(isalpha(book.title[i])){
+           book.title[i]=tolower(book.title[i]);
+        }else if(book.title[i]==' ' || book.title[i]==':' || book.title[i]==','){
+            book.title[i]='-';
+        }
+        book.slug[i] = book.title[i];
+    }
+    
+    for(int i=0; i<lon; i++){
+        if(book.slug[i]=='-' && book.slug[i+1]=='-'){
+            for(int j=i; j<lon; j++){
+                book.slug[j]=book.slug[j+1];
+            }
+        }
+        cout<<book.slug[i];
+    }
+    
+   
+}
+
+void bookAuthor(Book book){
+    
+    bool valid=true; //si es true lo introducido es válido y si es false no
+    
+    cout<<"Enter author(s): "<<endl;
     getline(cin, book.authors);
     //comprobar titulo
+    
+     int lon = book.authors.size(); //mide la longitud de la cadena introducida
+    //comprobar nombre
+    
+    for(int i=0; i<lon; i++){
+        if(not((isalnum(book.authors[i])) || book.authors[i]==' ' || book.authors[i]==':' || book.authors[i]==',' || book.authors[i]=='-')){
+            i = lon;
+            valid = false;
+            cout<<"No valido1"<<endl;
+            error(ERR_BOOK_AUTHORS);
+        }
+    }
+    
+   while(!valid){
+        cout<<"Enter author(s): "<<endl;
+        getline(cin, book.authors);
+    
+        lon = book.authors.size();
+        
+        valid = true;
+        
+        for(int i=0; i<lon; i++){
+            if(not((isalnum(book.authors[i])) || book.authors[i]==' ' || book.authors[i]==':' || book.authors[i]==',' || book.authors[i]=='-')){
+                i = lon;
+                valid = false;
+                cout<<"No valido2"<<endl;
+                error(ERR_BOOK_AUTHORS);
+            }
+        }
+    }
+}
+
+void bookYear(Book book){
+
+    bool valid = true;
     
     cout<<"Enter publication year: "<<endl;
     cin>>book.year;
@@ -137,9 +235,7 @@ void addBook(BookStore &bookStore, Error& e){
     }
    
     while(!valid){
-       
-            e = ERR_BOOK_DATE;
-            error(e);
+            error(ERR_BOOK_DATE);
             
             cout<<"Enter publication year: "<<endl;
             cin>>book.year;
@@ -149,36 +245,55 @@ void addBook(BookStore &bookStore, Error& e){
             }else{
                 valid = true;
             } 
-    }
-    
+    }   
+}
+
+void bookPrice(Book book){
+
+    bool valid= true;
     cout<<"Enter price: "<<endl;
     cin>>book.price;
     //comprobar precio
     
-    if(book.year<=0){
-            valid = false;
+    if(book.price<=0){
+        valid = false;
     }else{
         valid = true;
     }
    
     while(!valid){
-       
-            e = ERR_BOOK_PRICE;
-            error(e);
+        error(ERR_BOOK_PRICE);
             
-            cout<<"Enter publication year: "<<endl;
-            cin>>book.year;
+        cout<<"Enter price: "<<endl;
+        cin>>book.price;
     
-            if(book.year<=0){
-                valid = false;
-            }else{
-                valid = true;
-            } 
+        if(book.price<=0){
+            valid = false;
+        }else{
+            valid = true;
+        } 
     }
+}
+
+void addBook(BookStore &bookStore){
+    
+    Book book;
+    
+    bookTitle(book); //comprobamos título
+    bookAuthor(book); //comprobamos autor  
+    bookYear(book); //comprobamos año
+    bookPrice(book); //comprobamos precio
+    
+    book.id = bookStore.nextId; 
+    bookStore.nextId++;
+
     bookStore.books.push_back(book);
 }
 
 void deleteBook(BookStore &bookStore) {
+    
+    cout<<"Enter book id: "<<endl;
+    
 }
 
 void importExportMenu(BookStore &bookStore) {
@@ -201,7 +316,7 @@ int main(int argc, char *argv[]) {
   bookStore.name = "My Book Store";
   bookStore.nextId = 1;
 
-  Error e; //declaramos variable para el error
+  //Error e; //declaramos variable para el error
   char option;
   do {
     showMainMenu();
@@ -216,7 +331,7 @@ int main(int argc, char *argv[]) {
         showExtendedCatalog(bookStore);
         break;
       case '3':
-        addBook(bookStore, e);
+        addBook(bookStore);
         break;
       case '4':
         deleteBook(bookStore);
