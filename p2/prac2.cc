@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <cctype>
+#include <cstdlib>
 
 
 using namespace std;
@@ -115,11 +116,11 @@ void showMainMenu() {
 
 void showCatalog(const BookStore &bookStore) {
     
-    int numbooks = bookStore.nextId-1;
-    int lon;
+    int numbooks = bookStore.books.size(); //número de libros
+    int lon; //medirá la longitud de la cadena que necesitemos en ese momento
     
     for(int i=0; i<numbooks; i++){
-        cout << i+1 << "." ;
+        cout << bookStore.books[i].id << "." ;
         lon= bookStore.books[i].title.size();
         
         for(int j=0; j<lon; j++){
@@ -132,26 +133,27 @@ void showCatalog(const BookStore &bookStore) {
 
 void showExtendedCatalog(const BookStore &bookStore) {
 
-    int numbooks = bookStore.nextId-1;
-    int lon;
+    int numbooks = bookStore.books.size(); //número de libros
+    int lon; //medirá la longitud de la cadena que necesitemos en ese momento
+    int i=0, j=0; //contadores for
     
-    for(int i=0; i<numbooks; i++){
+    for(i=0; i<numbooks; i++){
         cout << '"';
         lon= bookStore.books[i].title.size();
         
-        for(int j=0; j<lon; j++){
+        for(j=0; j<lon; j++){
             cout<<bookStore.books[i].title[j];
         }
         cout << '"'<<"."<<'"';
         lon= bookStore.books[i].authors.size();
         
-        for(int j=0; j<lon; j++){
+        for(j=0; j<lon; j++){
             cout<<bookStore.books[i].authors[j];
         }
         cout << '"'<<"."<< bookStore.books[i].year << "."<<'"';
         lon= bookStore.books[i].slug.size();
         
-        for(int j=0; j<lon; j++){
+        for(j=0; j<lon; j++){
             cout<<bookStore.books[i].slug[j];
         }
         cout<< '"'<<"." << bookStore.books[i].price << endl;
@@ -160,40 +162,36 @@ void showExtendedCatalog(const BookStore &bookStore) {
 
 void bookTitle(Book &book){
     
-    bool valid=true; //si es true lo introducido es válido y si es false no
+    bool valid=false; //si es true lo introducido es válido y si es false no
     
-    cout<<"Enter book title: "<<endl;
-    getline(cin, book.title);
-    
-    int lon = book.title.size(); //mide la longitud de la cadena introducida
-    //comprobar nombre
-    
-    for(int i=0; i<lon; i++){
-        if(not((isalnum(book.title[i])) || book.title[i]==' ' || book.title[i]==':' || book.title[i]==',' || book.title[i]=='-')){
-            i = lon;
-            valid = false;
-            error(ERR_BOOK_TITLE);
-        }
-    }
-    
-   while(!valid){
+    while(!valid){
         cout<<"Enter book title: "<<endl;
         getline(cin, book.title);
     
-        lon = book.title.size();
+        int lon = book.title.size(); //mide la longitud de la cadena introducida
+
+        if(lon==0){ //comprobamos que la cadena no esté vacia
+            valid = false;
+            error(ERR_BOOK_TITLE);
+        }
         
-        valid = true;
         
+        //comprobar nombre
         for(int i=0; i<lon; i++){
             if(not((isalnum(book.title[i])) || book.title[i]==' ' || book.title[i]==':' || book.title[i]==',' || book.title[i]=='-')){
                 i = lon;
                 valid = false;
                 error(ERR_BOOK_TITLE);
+            }else if(book.title.empty()){
+                i = lon;
+                valid = false;
+                error(ERR_BOOK_TITLE);
+            }else{
+                valid=true;
             }
-        }
     }
-    
-    bookSlug(book); //creamos el slug del libro
+        bookSlug(book); //creamos el slug del libro
+    }
 }
 
 void bookSlug(Book &book){
@@ -235,38 +233,32 @@ void bookSlug(Book &book){
 
 void bookAuthor(Book &book){
     
-    bool valid=true; //si es true lo introducido es válido y si es false no
+    bool valid=false; //si es true lo introducido es válido y si es false no
     
-    cout<<"Enter author(s): "<<endl;
-    getline(cin, book.authors);
-    //comprobar titulo
-    
-     int lon = book.authors.size(); //mide la longitud de la cadena introducida
-    //comprobar nombre
-    
-    for(int i=0; i<lon; i++){
-        if(not((isalnum(book.authors[i])) || book.authors[i]==' ' || book.authors[i]==':' || book.authors[i]==',' || book.authors[i]=='-')){
-            i = lon;
-            valid = false;
-            cout<<"No valido1"<<endl;
-            error(ERR_BOOK_AUTHORS);
-        }
-    }
-    
-   while(!valid){
+    while(!valid){
         cout<<"Enter author(s): "<<endl;
         getline(cin, book.authors);
+        //comprobar titulo
     
-        lon = book.authors.size();
-        
-        valid = true;
+        int lon = book.authors.size(); //mide la longitud de la cadena introducida
+        //comprobar nombre
+    
+        if(lon==0){ //comprobamos que la cadena no esté vacia
+            valid = false;
+            error(ERR_BOOK_TITLE);
+        }
         
         for(int i=0; i<lon; i++){
             if(not((isalnum(book.authors[i])) || book.authors[i]==' ' || book.authors[i]==':' || book.authors[i]==',' || book.authors[i]=='-')){
                 i = lon;
                 valid = false;
-                cout<<"No valido2"<<endl;
                 error(ERR_BOOK_AUTHORS);
+            }else if(book.authors.empty()){
+                i = lon;
+                valid = false;
+                error(ERR_BOOK_AUTHORS);
+            }else{
+                valid=true;
             }
         }
     }
@@ -274,54 +266,47 @@ void bookAuthor(Book &book){
 
 void bookYear(Book &book){
 
-    bool valid = true;
-    
-    cout<<"Enter publication year: "<<endl;
-    cin>>book.year;
-    //comprobar año
-   
-    
-   if(book.year<1440 || book.year>2022){
-            valid = false;
-    }else{
-        valid = true;
-    }
+    bool valid = false;
+    string str;
    
     while(!valid){
-            error(ERR_BOOK_DATE);
             
-            cout<<"Enter publication year: "<<endl;
-            cin>>book.year;
+        cout<<"Enter publication year: "<<endl;
+        getline(cin, str);
+            
+        int lon = str.size(); //mide la longitud de la cadena introducida
     
-            if(book.year<1440 || book.year>2022){
-                valid = false;
-            }else{
-                valid = true;
-            } 
+        if(lon==0){ //comprobamos que la cadena no esté vacia
+            valid = false;
+            error(ERR_BOOK_DATE);
+        }
+         
+        book.year=stoi(str);
+
+            //comprobar año
+            
+        if(book.year<1440 || book.year>2022){
+            valid = false;
+            error(ERR_BOOK_DATE);
+        }else{
+            valid = true;
+        } 
     }   
 }
 
 void bookPrice(Book &book){
 
-    bool valid= true;
-    cout<<"Enter price: "<<endl;
-    cin>>book.price;
-    //comprobar precio
-    
-    if(book.price<=0){
-        valid = false;
-    }else{
-        valid = true;
-    }
+    bool valid= false;
    
     while(!valid){
-        error(ERR_BOOK_PRICE);
             
         cout<<"Enter price: "<<endl;
         cin>>book.price;
-    
+        //comprobar precio
+        
         if(book.price<=0){
             valid = false;
+            error(ERR_BOOK_PRICE);
         }else{
             valid = true;
         } 
@@ -345,40 +330,52 @@ void addBook(BookStore &bookStore){
 
 void deleteBook(BookStore &bookStore){
     
-    unsigned int numbooks=bookStore.nextId;
+    unsigned int idbooks=bookStore.nextId; //indica el ultimo id utilizado
     unsigned int deleteId; 
-    bool valid=true; //indica si el id es valido
+    bool valid=false; //indica si el id es valido
     unsigned int i=0; 
+    unsigned int numbooks=bookStore.books.size(); //indica el número de libros que hay
+    
     cout<<"Enter book id: "<<endl;
     cin>>deleteId;
     
-    for(i=0; (i<numbooks || valid==true); i++){
+    if(deleteId>idbooks){
+        error(ERR_ID);
+    }
+    
+    for(i=0; i<=numbooks && !valid; i++){
         if(deleteId!=bookStore.books[i].id){
             valid=false;
         }else{
             valid=true;
         }
     }
+    
     if(!valid){
         error(ERR_ID);
     }else{
-        bookStore.books[i].erase();
+        bookStore.books.erase(bookStore.books.begin()+(i-1));
     }
 }
 
 void importExportMenu(BookStore &bookStore) {
+    
 }
 
 void importFromCsv(BookStore &bookStore){
+    
 }
 
 void exportToCsv(const BookStore &bookStore){
+    
 }
 
 void loadData(BookStore &bookStore){
+    
 }
 
 void saveData(const BookStore &bookStore){
+    
 }
 
 int main(int argc, char *argv[]) {
