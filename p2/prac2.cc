@@ -1,4 +1,4 @@
-/* Programación 2 - Práctica 1
+/* Programación 2 - Práctica 2
  * DNI:48776731X
  * NOMBRE: Esther Peral Soler
  * Token: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
@@ -8,7 +8,10 @@
 #include <vector>
 #include <cctype>
 #include <cstdlib>
-
+#include <fstream>
+#include <cstring>
+#include <sstream>
+#include <cmath>
 
 using namespace std;
 
@@ -144,52 +147,61 @@ void showExtendedCatalog(const BookStore &bookStore) {
         for(j=0; j<lon; j++){
             cout<<bookStore.books[i].title[j];
         }
-        cout << '"'<<"."<<'"';
+        cout << '"'<<","<<'"';
         lon= bookStore.books[i].authors.size();
         
         for(j=0; j<lon; j++){
             cout<<bookStore.books[i].authors[j];
         }
-        cout << '"'<<"."<< bookStore.books[i].year << "."<<'"';
+        cout << '"'<<","<< bookStore.books[i].year << ","<<'"';
         lon= bookStore.books[i].slug.size();
         
         for(j=0; j<lon; j++){
             cout<<bookStore.books[i].slug[j];
         }
-        cout<< '"'<<"." << bookStore.books[i].price << endl;
+        cout<< '"'<<"," << bookStore.books[i].price << endl;
     }
+}
+
+bool checkString(string s, Error e){
+    
+    bool valid=false; 
+    int lon = s.size(); //mide la longitud de la cadena introducida
+
+    if(lon==0){ //comprobamos que la cadena no esté vacia
+        valid = false;
+        error(e);
+    }
+        
+    //comprobar nombre
+    for(int i=0; i<lon; i++){
+        if(not((isalnum(s[i])) || s[i]==' ' || s[i]==':' || s[i]==',' || s[i]=='-')){
+            i = lon;
+            valid = false;
+            error(e);
+        }else if(s.empty()){
+            i = lon;
+            valid = false;
+            error(e);
+        }else{
+            valid=true;
+   
+        }
+    }
+    return valid;
 }
 
 void bookTitle(Book &book){
     
     bool valid=false; //si es true lo introducido es válido y si es false no
+    stringstream blsdjh;
     
     while(!valid){
         cout<<"Enter book title: "<<endl;
         getline(cin, book.title);
-    
-        int lon = book.title.size(); //mide la longitud de la cadena introducida
-
-        if(lon==0){ //comprobamos que la cadena no esté vacia
-            valid = false;
-            error(ERR_BOOK_TITLE);
-        }
         
-        
-        //comprobar nombre
-        for(int i=0; i<lon; i++){
-            if(not((isalnum(book.title[i])) || book.title[i]==' ' || book.title[i]==':' || book.title[i]==',' || book.title[i]=='-')){
-                i = lon;
-                valid = false;
-                error(ERR_BOOK_TITLE);
-            }else if(book.title.empty()){
-                i = lon;
-                valid = false;
-                error(ERR_BOOK_TITLE);
-            }else{
-                valid=true;
-            }
-    }
+        valid=checkString(book.title, ERR_BOOK_TITLE);
+       
         bookSlug(book); //creamos el slug del libro
     }
 }
@@ -239,28 +251,8 @@ void bookAuthor(Book &book){
         cout<<"Enter author(s): "<<endl;
         getline(cin, book.authors);
         //comprobar titulo
-    
-        int lon = book.authors.size(); //mide la longitud de la cadena introducida
-        //comprobar nombre
-    
-        if(lon==0){ //comprobamos que la cadena no esté vacia
-            valid = false;
-            error(ERR_BOOK_TITLE);
-        }
         
-        for(int i=0; i<lon; i++){
-            if(not((isalnum(book.authors[i])) || book.authors[i]==' ' || book.authors[i]==':' || book.authors[i]==',' || book.authors[i]=='-')){
-                i = lon;
-                valid = false;
-                error(ERR_BOOK_AUTHORS);
-            }else if(book.authors.empty()){
-                i = lon;
-                valid = false;
-                error(ERR_BOOK_AUTHORS);
-            }else{
-                valid=true;
-            }
-        }
+        valid=checkString(book.authors, ERR_BOOK_AUTHORS);
     }
 }
 
@@ -313,7 +305,7 @@ void bookPrice(Book &book){
             error(ERR_BOOK_PRICE);
         }else{
          
-            book.price=stoi(strprice);
+            book.price=stof(strprice);
         
             if(book.price<=0){
                 valid = false;
@@ -353,41 +345,244 @@ void deleteBook(BookStore &bookStore){
     
     if(deleteId>idbooks){
         error(ERR_ID);
-    }
-    
-    for(i=0; i<=numbooks && !valid; i++){
-        if(deleteId!=bookStore.books[i].id){
-            valid=false;
-        }else{
-            valid=true;
-        }
-    }
-    
-    if(!valid){
-        error(ERR_ID);
     }else{
-        bookStore.books.erase(bookStore.books.begin()+(i-1));
+    
+        for(i=0; i<=numbooks && !valid; i++){
+            if(deleteId!=bookStore.books[i].id){
+                valid=false;
+            }else{
+                valid=true;
+            }
+        }
+    
+        if(!valid){
+            error(ERR_ID);
+        }else{
+            bookStore.books.erase(bookStore.books.begin()+(i-1));
+        }
     }
 }
 
 void importExportMenu(BookStore &bookStore) {
     
+    char option; 
+    
+    cout << "[Import/export options]" << endl
+       << "1- Import from CSV" << endl
+       << "2- Export to CSV" << endl
+       << "3- Load data" << endl
+       << "4- Save data" << endl
+       << "b- Back to main menu" << endl
+       << "Option: ";
+    
+    cin >> option;
+    cin.get();
+    
+    switch(option){
+        case '1':
+            importFromCsv(bookStore);
+            break;
+        case '2':
+            exportToCsv(bookStore);
+            break;
+        case '3':
+            loadData(bookStore);
+            break;
+        case '4':
+            saveData(bookStore);
+            break;
+        case 'b':
+            break;
+        default:
+            error(ERR_OPTION);
+    }
+}
+
+void comprobarcadena(char cadena[KMAXSTRING], int &i, const string &l){
+    
+int j=0;
+
+    while(l[i]!='\"'){
+        cadena[j]=l[i];
+        i++;    
+        j++;
+    }
+    i=i+3;
+    cadena[j]='\0';
 }
 
 void importFromCsv(BookStore &bookStore){
     
+    string filename;
+   // Book newbook;
+    
+    cout<<"Enter file name: "<<endl;
+    getline(cin, filename);
+
+  
+    ifstream ficheroLeer;
+    ficheroLeer.open(filename);
+   
+    if(ficheroLeer.is_open()){
+        string l;
+        while(getline(ficheroLeer, l)){
+            int lon=l.length();
+            int i=1, byear=0;  // i será el contador de los carácteres en el string de cada linea y declaramos las partes de un book para luego igualarlos
+            float bprice=0;
+            char bslug[KMAXSTRING];
+            char btitle[KMAXSTRING];
+            char bauthor[KMAXSTRING];
+            
+            bool check =true;   //indica que cada apartado es correcto
+            
+            comprobarcadena(btitle, i, l);//determinamos hasta donde llega el titulo
+            check=checkString(btitle, ERR_BOOK_TITLE); //comprovamos titulo
+            
+            if(check){
+                comprobarcadena(bauthor, i, l); //determinamos hasta donde llega el autor
+                check=checkString(bauthor, ERR_BOOK_AUTHORS); //comprobamos cadena
+            }
+            
+            if(check){
+                while(l[i-1]!=','){
+                    byear=byear*10+(l[i-1]-'0');
+                    i++;
+                }
+                
+                if(byear<1440 || byear>2022){
+                    check = false;
+                    error(ERR_BOOK_DATE);
+                }else{
+                    check = true;
+                }
+                i++;
+            }
+            
+            if(check){
+                comprobarcadena(bslug, i, l);
+            }
+            
+            if(check){
+                i--;
+                int j=lon-i;
+                string cprice;
+                
+                cprice=l.substr(i, j);
+                
+                
+                /*int z=0;
+                while(l[i]!='\0'){
+                    if(l[i]=='.'){
+                        z++;
+                    }else if(l[i-z]=='.'){
+                        bprice=bprice+((l[i]-'0')*pow(10, -z));
+                        z++;
+                    }else{
+                        bprice=bprice*10+(l[i]-'0');
+                    }
+                    i++;
+                }*/
+                
+                if(j==0){ //comprobamos que la cadena no esté vacia
+                    check = false;
+                    error(ERR_BOOK_PRICE);
+                }else{
+         
+                    bprice=stof(cprice);
+                
+                    if(bprice<=0){
+                        check = false;
+                        error(ERR_BOOK_PRICE);
+                    }else{
+                        check = true;
+                    }
+                } 
+            }
+                
+            
+            if(check){
+                Book book; 
+                book.title=btitle;
+                book.authors=bauthor;
+                book.year=byear;
+                book.slug=bslug;
+                book.price=bprice;
+                book.id=bookStore.nextId;
+                bookStore.nextId++;
+                bookStore.books.push_back(book);
+            }
+        }
+        ficheroLeer.close();
+    }else{
+        error(ERR_FILE);
+        importExportMenu(bookStore);
+    }
 }
 
 void exportToCsv(const BookStore &bookStore){
     
+    string filename;
+    unsigned int lon = bookStore.books.size();
+    
+    cout<<"Enter file name: "<<endl;
+    getline(cin, filename);
+   
+  
+    ofstream ficheroEsc;
+    ficheroEsc.open(filename, ios::out | ios::app);
+   
+    if(ficheroEsc.is_open()){
+        for(unsigned int i=0; i<lon; i++){
+            ficheroEsc << '"' << bookStore.books[i].title 
+            << '"'<<","<<'"'<< bookStore.books[i].authors
+            << '"'<<","<< bookStore.books[i].year 
+            << ","<<'"'<<bookStore.books[i].slug
+            << '"'<<"," << bookStore.books[i].price << endl;
+        }
+            
+        ficheroEsc.close();
+    }else{
+        error(ERR_FILE);
+        //importExportMenu(bookStore);   
+    }
 }
 
 void loadData(BookStore &bookStore){
     
+    char answer;
+    string filename;
+    
+    cout<<"All data will be erased, do you want to continue (Y/N)?: "<<endl;
+    cin>>answer;
+    
+    if(answer=='y' || answer=='Y'){
+        cout<<"Enter file name: "<<endl;
+        getline(cin, filename);
+        
+        ifstream fichero(filename);
+        
+        if(fichero.is_open()){
+        
+            fichero.close();
+        }else{
+            error(ERR_FILE);
+            importExportMenu(bookStore);
+        }
+    }else if(answer=='n' || answer=='N'){
+        importExportMenu(bookStore);
+    }else{
+        loadData(bookStore);
+    }
 }
 
 void saveData(const BookStore &bookStore){
     
+    string filename, basura;
+    
+    cout<<"Enter file name: "<<endl;
+    getline(cin, basura);
+    getline(cin, filename);
+    cout<<filename<<endl;
 }
 
 int main(int argc, char *argv[]) {

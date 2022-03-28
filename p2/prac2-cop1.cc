@@ -313,7 +313,7 @@ void bookPrice(Book &book){
             error(ERR_BOOK_PRICE);
         }else{
          
-            book.price=stoi(strprice);
+            book.price=stof(strprice);
         
             if(book.price<=0){
                 valid = false;
