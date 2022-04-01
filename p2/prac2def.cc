@@ -69,6 +69,8 @@ void exportToCsv(const BookStore &bookStore);
 void loadData(BookStore &bookStore, string filename);
 void saveData(const BookStore &bookStore);
 
+bool argumentos(int argc, char *argv[], BookStore &bookStore);
+
 void bookTitle(Book &book);
 void bookAuthor(Book &book);
 void bookYear(Book &book);
@@ -654,30 +656,52 @@ bool argumentos(int argc, char *argv[], BookStore &bookStore){
         
             if(strcmp(argv[1], "-l")!=0 && strcmp(argv[1], "-i")!=0){ //comprobamos que el primer argumento sea -l o -i
                 valid_arg=false;
-            }
+            }else{
         
-            if(argc==3){
-                if(strcmp(argv[1], "-l")==0){
-                loadData(bookStore, argv[2]);
-                }else{
-                importFromCsv(bookStore, argv[2]);
-                }
-            }
-            
-            if(argc==5){
-           
-                if((strcmp(argv[3], "-l")!=0 && strcmp(argv[3], "-i")!=0) || (strcmp(argv[1], argv[3])==00)){ //comprobamos que el segundo argumento sea -i o -l y que los dos no sean iguales
-               valid_arg=false;
-                }else{
-                    if(strcmp(argv[1], "-l")==0){//si tenemos los dos argumentos hacemos load primero
-                        loadData(bookStore, argv[2]);
-                        importFromCsv(bookStore, argv[4]);
+                if(argc==3){
+                    ifstream fichero1(argv[2]);
+                    if(fichero1.is_open()){
+                        valid_arg=true;
+                        fichero1.close();
                     }else{
-                        loadData(bookStore, argv[4]);
+                        valid_arg=false;
+                        error(ERR_FILE);
+                    }
+                    
+                    if(valid_arg && strcmp(argv[1], "-l")==0){
+                        loadData(bookStore, argv[2]);
+                    }else if(valid_arg){
                         importFromCsv(bookStore, argv[2]);
                     }
-                }   
-            }  
+                }
+            
+                if(valid_arg && argc==5){
+                    if((strcmp(argv[3], "-l")!=0 && strcmp(argv[3], "-i")!=0) || (strcmp(argv[1], argv[3])==00)){ //comprobamos que el segundo argumento sea -i o -l y que los dos no sean iguales
+                        valid_arg=false;
+                    }else{
+                        
+                        ifstream fichero1(argv[2]);
+                        ifstream fichero2(argv[4]);
+                        if(fichero1.is_open() && fichero2.is_open()){
+                            valid_arg=true;
+                            fichero1.close();
+                            fichero2.close();
+                        }else{
+                            valid_arg=false;
+                            error(ERR_FILE);
+                        }
+                        
+                        if(valid_arg && strcmp(argv[1], "-l")==0){//si tenemos los dos argumentos hacemos load primero
+                            loadData(bookStore, argv[2]);
+                            importFromCsv(bookStore, argv[4]);
+                            
+                        }else if(valid_arg){
+                            loadData(bookStore, argv[4]);
+                            importFromCsv(bookStore, argv[2]);
+                        }
+                    }   
+                }  
+            }
         }else{
             valid_arg=false;
         }
@@ -721,6 +745,7 @@ int main(int argc, char *argv[]) {
             error(ERR_OPTION);
         }
     } while (option != 'q');
+    
   }else{
       error(ERR_ARGS);
   }
