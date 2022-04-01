@@ -63,11 +63,13 @@ void showCatalog(const BookStore &bookStore);
 void showExtendedCatalog(const BookStore &bookStore);
 void addBook(BookStore &bookStore);
 void deleteBook(BookStore &bookStore);
-void importExportMenu(BookStore &bookStore);
-void importFromCsv(BookStore &bookStore, string filename);
+void importExportMenu(BookStore &bookStore, bool venirarg);
+void importFromCsv(BookStore &bookStore, string filename, bool venirarg);
 void exportToCsv(const BookStore &bookStore);
-void loadData(BookStore &bookStore, string filename);
+void loadData(BookStore &bookStore, string filename, bool venirarg);
 void saveData(const BookStore &bookStore);
+
+void argumentos(int argc, char *argv[], BookStore &bookStore, bool &venirarg, bool &valid_arg);
 
 void bookTitle(Book &book);
 void bookAuthor(Book &book);
@@ -75,8 +77,8 @@ void bookYear(Book &book);
 void bookPrice(Book &book);
 void bookSlug(Book &book);
 
-void askLoad(BookStore &bookStore);
-void askImport(BookStore &bookStore);
+void askLoad(BookStore &bookStore, bool venirarg);
+void askImport(BookStore &bookStore, bool venirarg);
 
 bool checkString(string s, Error e);
 void detCadena(char cadena[KMAXSTRING], int &i, const string &l);
@@ -362,7 +364,7 @@ void deleteBook(BookStore &bookStore){
     }
 }
 
-void importExportMenu(BookStore &bookStore) {
+void importExportMenu(BookStore &bookStore, bool venirarg) {
     
     char option; 
     
@@ -379,21 +381,23 @@ void importExportMenu(BookStore &bookStore) {
     
     switch(option){
         case '1':
-            askImport(bookStore);                    importExportMenu(bookStore);
+            askImport(bookStore, venirarg);                    
+            importExportMenu(bookStore, venirarg);
             break;
         case '2':
             exportToCsv(bookStore);
-            importExportMenu(bookStore); 
+            importExportMenu(bookStore, venirarg);
             break;
         case '3':
-            askLoad(bookStore);
-            importExportMenu(bookStore);
+            askLoad(bookStore, venirarg);
+            importExportMenu(bookStore, venirarg);
             break;
         case '4':
             saveData(bookStore);
-            importExportMenu(bookStore);
+            importExportMenu(bookStore, venirarg);
             break;
-        case 'b':
+        case 'b':            
+            importExportMenu(bookStore, venirarg);
             break;
         default:
             error(ERR_OPTION);
@@ -413,18 +417,18 @@ void detCadena(char cadena[KMAXSTRING], int &i, const string &l){
     cadena[j]='\0';
 }
 
-void askImport(BookStore &bookStore){
+void askImport(BookStore &bookStore, bool venirarg){
     
     string filename;
     
     cout<<"Enter file name: ";
     getline(cin, filename);
     
-    importFromCsv(bookStore, filename);
+    importFromCsv(bookStore, filename, venirarg);
 
 }
 
-void importFromCsv(BookStore &bookStore, string filename){
+void importFromCsv(BookStore &bookStore, string filename, bool venirarg){
     
     string l;
     ifstream ficheroLeer;
@@ -508,6 +512,10 @@ void importFromCsv(BookStore &bookStore, string filename){
     }else{
         error(ERR_FILE);
     }
+    
+    if(venirarg){
+        showMainMenu();
+    }
 }
 
 void exportToCsv(const BookStore &bookStore){
@@ -537,7 +545,7 @@ void exportToCsv(const BookStore &bookStore){
     }
 }
 
-void askLoad(BookStore &bookStore){
+void askLoad(BookStore &bookStore, bool venirarg){
 
     char answer;
     string filename;
@@ -555,15 +563,15 @@ void askLoad(BookStore &bookStore){
         cout<<"Enter file name: ";
         getline(cin, filename);
         
-        loadData(bookStore, filename);
+        loadData(bookStore, filename, venirarg);
     }else if(answer=='n' || answer=='N'){
-        importExportMenu(bookStore);
+        importExportMenu(bookStore, venirarg);
     }else{
-        askLoad(bookStore);
+        askLoad(bookStore, venirarg);
     }
 }
 
-void loadData(BookStore &bookStore, string filename){
+void loadData(BookStore &bookStore, string filename, bool venirarg){
     
     BinBook bBook;
     BinBookStore bBookStore;
@@ -591,6 +599,10 @@ void loadData(BookStore &bookStore, string filename){
         ficheroLoad.close();
     }else{
         error(ERR_FILE);
+    }
+    
+    if(venirarg){
+        showMainMenu();
     }
 }
 
@@ -640,49 +652,45 @@ void saveData(const BookStore &bookStore){
     }
 }
 
-bool argumentos(int argc, char *argv[], BookStore &bookStore){
+void argumentos(int argc, char *argv[], BookStore &bookStore, bool &venirarg, bool &valid_arg){
     
     //argc=número de argunemtos, argv[x] nos permite saber el argumento que ocupa la posción x
 
-    bool valid_arg;
+    venirarg=true;
      
-    if(argc==1){
+    if(argc<=5 && argc%2==1){ //comprobamos que tenga menos de 6 argumentos y que sean un número impar
         valid_arg=true;
-    }else{
-        if(argc<=5 && argc%2==1){ //comprobamos que tenga menos de 6 argumentos y que sean un número impar
-            valid_arg=true;
         
-            if(strcmp(argv[1], "-l")!=0 && strcmp(argv[1], "-i")!=0){ //comprobamos que el primer argumento sea -l o -i
-                valid_arg=false;
-            }
-        
-            if(argc==3){
-                if(strcmp(argv[1], "-l")==0){
-                loadData(bookStore, argv[2]);
-                }else{
-                importFromCsv(bookStore, argv[2]);
-                }
-            }
-            
-            if(argc==5){
-           
-                if((strcmp(argv[3], "-l")!=0 && strcmp(argv[3], "-i")!=0) || (strcmp(argv[1], argv[3])==00)){ //comprobamos que el segundo argumento sea -i o -l y que los dos no sean iguales
-               valid_arg=false;
-                }else{
-                    if(strcmp(argv[1], "-l")==0){//si tenemos los dos argumentos hacemos load primero
-                        loadData(bookStore, argv[2]);
-                        importFromCsv(bookStore, argv[4]);
-                    }else{
-                        loadData(bookStore, argv[4]);
-                        importFromCsv(bookStore, argv[2]);
-                    }
-                }   
-            }  
-        }else{
+        if(strcmp(argv[1], "-l")!=0 && strcmp(argv[1], "-i")!=0){ //comprobamos que el primer argumento sea -l o -i
             valid_arg=false;
         }
+        
+        if(argc==3){
+            if(strcmp(argv[1], "-l")==0){
+                loadData(bookStore, argv[2], venirarg);
+            }else{
+                importFromCsv(bookStore, argv[2], venirarg);
+            }
+        }
+        
+        if(argc==5){
+           
+            if((strcmp(argv[3], "-l")!=0 && strcmp(argv[3], "-i")!=0) || (strcmp(argv[1], argv[3])==00)){ //comprobamos que el segundo argumento sea -i o -l y que los dos no sean iguales
+               valid_arg=false;
+           }else{
+               if(strcmp(argv[1], "-l")==0){//si tenemos los dos argumentos hacemos load primero
+                    loadData(bookStore, argv[2], venirarg);
+                    importFromCsv(bookStore, argv[4], venirarg);
+                }else{
+                    loadData(bookStore, argv[4], venirarg);
+                    importFromCsv(bookStore, argv[2], venirarg);
+                }
+           }   
+        }  
+    }else{
+        valid_arg=false;
     }
-    return(valid_arg);
+    
 }
 
 int main(int argc, char *argv[]) {
@@ -690,10 +698,14 @@ int main(int argc, char *argv[]) {
   bookStore.name = "My Book Store";
   bookStore.nextId = 1;
 
-  bool arg = argumentos(argc, argv, bookStore);
+  bool venirarg = false;
+  bool valid_arg;
+  
+  argumentos(argc, argv, bookStore, venirarg, valid_arg);
+  
   char option;
   
-  if(arg){
+  if(valid_arg){
     do {
         showMainMenu();
         cin >> option;
@@ -713,7 +725,7 @@ int main(int argc, char *argv[]) {
             deleteBook(bookStore);
             break;
         case '5':
-            importExportMenu(bookStore);
+            importExportMenu(bookStore, venirarg);
             break;
         case 'q':
             break;
