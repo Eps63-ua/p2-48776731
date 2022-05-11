@@ -1,4 +1,4 @@
-#ifndef _JANKALI_H
+/*#ifndef _JANKALI_H
 #define _JANKALI_H
 
 #include <iostream>
@@ -20,4 +20,4 @@ class Jankali{
         //friend
 };
 
-#endif
+#endif*/

@@ -1,4 +1,4 @@
-#ifndef _BETONSKI_H_
+/*#ifndef _BETONSKI_H_
 #define _BETONSKI_H_
 
 #include <iostream>
@@ -23,4 +23,4 @@ class Betonski{
         int calculateValue(typedef JunkType) const;
 };
 
-#endif
+#endif*/

@@ -25,8 +25,8 @@ void Coordinate::setColumn(int column){
     this->column=column;
 }
 
-bool Coordinate::compare(const Coordinate &coord){
-    bool igual;
+bool Coordinate::compare(const Coordinate &coord) {
+    bool igual=false;
     
     if((this->getColumn()==coord.getColumn()) && (this->getRow()==coord.getRow())){
         igual=true;

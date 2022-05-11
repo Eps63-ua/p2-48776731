@@ -1,11 +1,14 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#include "Coordinate.h"
+#include "Junk.h"
+
 using namespace std;
 
 class Map{
     
-    private:
+    protected:
         int row;
         int column;
         
