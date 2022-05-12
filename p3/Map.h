@@ -4,19 +4,26 @@
 #include "Coordinate.h"
 #include "Junk.h"
 
+#include <vector>
+
 using namespace std;
 
 class Map{
     
+    friend ostream& operator<<(ostream &os, const Map &map);
+    
     protected:
-        int row;
-        int column;
+        int rows;
+        int columns;
+        vector<vector<Junk> > junks;
         
     public:
         Map(int rows, int columns);
-        bool inInside(const Coordinate &coord);
+        bool isInside(const Coordinate &coord) const;
         void putJunk(const Junk &junk, const Coordinate &coord);
-       // Junk
+        Junk getJunk(const Coordinate &coord) const;
+        Junk collectJunk(const Coordinate &coord);
+        
 };
 
 #endif

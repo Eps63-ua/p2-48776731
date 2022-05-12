@@ -2,12 +2,15 @@
 #include <iostream>
 using namespace std;
 
-Coordinate::Coordinate(int fila, int columna){
-    row=fila;
-    column=columna;
+Coordinate::Coordinate(){
+    row=column=-1;
 }
 
-Coordinate::~Coordinate(){}
+Coordinate::Coordinate(int row, int column){
+    this->row=row;
+    this->column=column;
+}
+
 
 int Coordinate::getRow() const{
     return row;
@@ -25,10 +28,10 @@ void Coordinate::setColumn(int column){
     this->column=column;
 }
 
-bool Coordinate::compare(const Coordinate &coord) {
+bool Coordinate::compare(const Coordinate &coord) const{
     bool igual=false;
     
-    if((this->getColumn()==coord.getColumn()) && (this->getRow()==coord.getRow())){
+    if((column==coord.column) && (row==coord.row)){
         igual=true;
     }    
         return igual;

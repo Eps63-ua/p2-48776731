@@ -10,14 +10,15 @@ class Coordinate{
         int row;
         int column;
     public:
-        Coordinate(int fila=-1, int columna=-1); //constructor, iniciamos a -1
-        ~Coordinate();
+        Coordinate();
+        Coordinate(int row, int column); //constructor, iniciamos a -1
         int getRow() const; //devuelve valor fila, getters
         int getColumn() const; //devuelve valor columna, getters
-        void setRow(int fila); //modifica valor fila, setters
-        void setColumn(int columna); //modifica valor columna, setters
-        bool compare(const Coordinate &coord) ; //compara coordenadas
-        friend ostream& operator<<(ostream &os, const Coordinate &coord); //muestra coordenadas
+        void setRow(int row); //modifica valor fila, setters
+        void setColumn(int column); //modifica valor columna, setters
+        bool compare(const Coordinate &coord) const; //compara coordenadas
+    
+    friend ostream& operator<<(ostream &os, const Coordinate &coord); //muestra coordenadas
 };
 
 #endif

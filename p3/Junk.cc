@@ -13,6 +13,9 @@ Junk::Junk(){
 Junk::Junk(JunkType type, int quantity){    
     
     if(quantity<0){
+        this->type=WASTELAND;
+        this->quantity=0; //preguntar que valor deberia tener las variables
+        
         throw EXCEPTION_QUANTITY;
     }else{
         this->type=type;
