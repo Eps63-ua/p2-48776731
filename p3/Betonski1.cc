@@ -73,7 +73,7 @@ int Betonski::spoliation(){
         
         for(unsigned int y=0; y<bag.size(); y++){
             recursos=recursos+bag[y].getValue();
-           //recursos=calculateValue(bag[y].getType());
+           // recursos=calculateValue(bag[y].getType());
         }
         anger=anger+recursos;
         
@@ -91,7 +91,7 @@ int Betonski::spoliation(){
 
 int Betonski::spoliation(JunkType type){
     
-    int recursos=0;
+    /*int recursos=0;
     
      if(!captured){
         throw BETONSKI_NOT_CAPTURED;
@@ -113,7 +113,26 @@ int Betonski::spoliation(JunkType type){
             }
         }
     }
-    return recursos;
+    return recursos;*/
+    
+    int valor=0;
+    valor=calculateValue();
+    if(captured==false){
+        throw BETONSKI_NOT_CAPTURED;
+    }else if(calculateValue(type)+anger>5000){
+        captured=false;
+        anger=0;
+        throw EXCEPTION_REBELION;
+    }else{
+        anger=anger+valor;
+        for(unsigned int y=0; y<bag.size(); y++){
+            if((type==bag[y].getType()) ){
+                bag.erase(bag.begin()+y);
+                y--;
+            }
+        }
+        return valor;
+    }
 }
 
 int Betonski::extract(Map &map){

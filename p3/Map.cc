@@ -1,3 +1,8 @@
+/* Programación 2 - Práctica 3
+ * DNI:48776731X
+ * NOMBRE: Esther Peral Soler
+ * Token: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
+ */
 #include "Map.h"
 #include "Coordinate.h"
 #include "Junk.h"
@@ -11,8 +16,6 @@ Map::Map(int rows, int columns){
     
     
     if(rows<5 || columns<5){
-        this->rows=0;//PREGUNTAR
-        this->columns=0;
         throw EXCEPTION_SIZE;
     }else{
         this->rows=rows;
@@ -29,7 +32,6 @@ Map::Map(int rows, int columns){
             junks.push_back(Junks);
         }
     }
-    
 }
 
 

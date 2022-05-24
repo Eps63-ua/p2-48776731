@@ -1,3 +1,8 @@
+/* Programación 2 - Práctica 3
+ * DNI:48776731X
+ * NOMBRE: Esther Peral Soler
+ * Token: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
+ */
 #ifndef _MAP_H_
 #define _MAP_H_
 

@@ -1,3 +1,8 @@
+/* Programación 2 - Práctica 3
+ * DNI:48776731X
+ * NOMBRE: Esther Peral Soler
+ * Token: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
+ */
 #include "Junk.h"
 #include <iostream>
 #include <string.h>
@@ -6,16 +11,12 @@ using namespace std;
 
 Junk::Junk(){
     type= WASTELAND;
-    quantity=0;
-    
+    quantity=0;    
 }
     
 Junk::Junk(JunkType type, int quantity){    
     
     if(quantity<0){
-        this->type=WASTELAND;
-        this->quantity=0; //preguntar que valor deberia tener las variables
-        
         throw EXCEPTION_QUANTITY;
     }else{
         this->type=type;

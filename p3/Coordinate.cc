@@ -29,12 +29,13 @@ void Coordinate::setColumn(int column){
 }
 
 bool Coordinate::compare(const Coordinate &coord) const{
-    bool igual=false;
     
     if((column==coord.column) && (row==coord.row)){
-        igual=true;
-    }    
-        return igual;
+        return true;
+        
+    }else{
+        return false;
+    }
 }    
 
 
