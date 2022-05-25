@@ -1,3 +1,8 @@
+/* Programación 2 - Práctica 3
+ * DNI:48776731X
+ * NOMBRE: Esther Peral Soler
+ * Token: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
+ */
 #include "Betonski.h"
 
 using namespace std;
@@ -92,13 +97,12 @@ int Betonski::spoliation(){
 int Betonski::spoliation(JunkType type){
     
     int recursos=0;
-    
+    anger=anger+calculateValue(type);
      if(!captured){
         throw BETONSKI_NOT_CAPTURED;
     }else{
         for(unsigned int y=0; y<bag.size(); y++){
             if((type==bag[y].getType()) ){
-                anger=anger+bag[y].getValue();
                 recursos=recursos+bag[y].getValue();
             
                 if(anger>5000){

@@ -103,9 +103,9 @@ ostream& operator<<(ostream &os, const Map &map){
             Junk tipoJunk;
             tipoJunk=map.junks[i][j];
             if(tipoJunk.getTypeChar()=='W'){
-                os<<"  ";
+                os<<"   ";
             }else{
-                os<<" "<<tipoJunk.getTypeChar();
+                os<<tipoJunk.getTypeChar()<<"  ";
             }
         }
         os<<endl;
