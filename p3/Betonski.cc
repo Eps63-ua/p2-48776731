@@ -5,6 +5,7 @@
  */
 #include "Betonski.h"
 
+
 using namespace std;
 
 
@@ -235,19 +236,3 @@ ostream& operator<<(ostream &os, const Betonski &betonski){
     }
     return os;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -43,7 +43,6 @@ bool Coordinate::compare(const Coordinate &coord) const{
     }
 }    
 
-
 ostream& operator<<(ostream &os, const Coordinate &coord){
     os << "[" << coord.row << "," << coord.column << "]" << endl;
     return os;

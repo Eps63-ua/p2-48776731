@@ -10,25 +10,28 @@
 #include "Junk.h"
 #include "Map.h"
 #include "Util.h"
+#include "Betonski.h"
 
 #include <iostream>
+#include <vector>
+#include <string.h>
 
 using namespace std;
 
 class Jankali{
-    private:
+    protected:
         string name;
         int power;
-        vector<Betonski> subdued;
+        vector<Betonski*> subdued;
         vector<Coordinate> traps;
     public:
         Jankali(string name);
         string getName() const;
         int getPower() const;
-        void hunt(vector<Betonski *betonskis>);
+        void hunt(vector<Betonski*> betonskis);
         bool setTrap(const Coordinate &coord);
         void spoil();
-        void spoil(typedef JunkType);
+        void spoil(JunkType type);
         void spoil(int pos);
         
     friend ostream& operator<<(ostream &os, const Jankali &jankali);
